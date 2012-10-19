@@ -64,6 +64,7 @@ sub Notify
 	    $frame->SetSats($satlist);
 	}
     }
+    $frame->Refresh();
 }
 
 sub SetFrame
@@ -217,6 +218,7 @@ sub OnPaint {
 	}
 	$dc->DrawCircle($x,$y,3);
     }
+
 }
 
 }
