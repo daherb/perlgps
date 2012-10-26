@@ -49,7 +49,7 @@ sub Notify
 	if (defined $satarray)
 	{
 	    my $satcount=scalar @$satarray;
-	    $frame->SetSatCount($satcount);
+#	    $frame->SetSatCount($satcount);
 #	    print Dumper(scalar @$satarray) 
 	    my $satlist=[];
 	    for (my $i=0; $i<$satcount; $i++)
@@ -72,6 +72,12 @@ sub SetFrame
     my $this=shift;
     $frame=shift;
 }
+
+sub Exit
+{
+    close($sock);
+}
+
 }
 # every program must have a Wx::App-derive class
 package MyApp;
@@ -118,7 +124,7 @@ use Math::Trig;
 
 my $long;
 my $lat;
-my $sats;
+#my $sats;
 my $gps;
 my $alt;
 my $time;
@@ -138,12 +144,12 @@ sub SetLat
     $lat->SetLabel($val."° N") if defined $val;
 }
 
-sub SetSatCount
-{
-    my $this=shift;
-    my $val=shift;
-    $sats->SetLabel($val) if defined $val;
-}
+#sub SetSatCount
+#{
+#    my $this=shift;
+#    my $val=shift;
+#    $sats->SetLabel($val) if defined $val;
+#}
 
 sub SetTime
 {
@@ -171,21 +177,20 @@ sub SetSats
 
 sub new {
     # new frame with no parent, id -1
-    my( $this ) = shift->SUPER::new( undef, -1, 'PerlGPS', [-1, -1], [300, 350] );
-    my $llong = Wx::StaticText->new($this, -1, "Longitude", [10,280]);
-    my $lalt = Wx::StaticText->new($this, -1, "Altitude", [10,300]);
-    my $llat = Wx::StaticText->new($this, -1, "Latitude", [155,280]);
-    my $ltime = Wx::StaticText->new($this, -1, "Time", [155,300]);
-    my $lsats = Wx::StaticText->new($this, -1, "Satelites", [10,320]);
-    $long = Wx::StaticText->new($this, -1, "0", [60,280]);
-    $lat = Wx::StaticText->new($this, -1, "0", [205,280]);
-    $sats = Wx::StaticText->new($this, -1, "0", [60,320]);
-    $alt=Wx::StaticText->new($this, -1, "0", [60,300]);
-    $time=Wx::StaticText->new($this, -1, "0", [190,300]);
-    $this->SetIcon( Wx::GetWxPerlIcon() );
+    my( $this ) = shift->SUPER::new( undef, -1, 'PerlGPS', [-1, -1], [620, 640] );
+    my $llong = Wx::StaticText->new($this, -1, "Longitude", [10,620]);
+    my $llat = Wx::StaticText->new($this, -1, "Latitude", [155,620]);
+    my $lalt = Wx::StaticText->new($this, -1, "Altitude", [330,620]);
+    my $ltime = Wx::StaticText->new($this, -1, "Time", [440,620]);
+#    my $lsats = Wx::StaticText->new($this, -1, "Satelites", [10,620]);
+    $long = Wx::StaticText->new($this, -1, "0", [60,620]);
+    $lat = Wx::StaticText->new($this, -1, "0", [205,620]);
+#    $sats = Wx::StaticText->new($this, -1, "0", [60,620]);
+    $alt=Wx::StaticText->new($this, -1, "0", [380,620]);
+    $time=Wx::StaticText->new($this, -1, "0", [480,620]);
+#    $this->SetIcon( Wx::GetWxPerlIcon() );
     # declare that all paint events will be handled with the OnPaint method
     EVT_PAINT( $this, \&OnPaint );
-    
     return $this;
 }
 
@@ -196,29 +201,35 @@ sub OnPaint {
     my( $dc ) = Wx::PaintDC->new( $this );
     $dc->SetBrush(Wx::wxWHITE_BRUSH);
     $dc->SetPen(Wx::wxBLACK_PEN);
-    $dc->DrawRectangle(25,25,250,250);
-    $dc->DrawCircle(150,150,110);
-    $dc->DrawLine(150,25,150,275);
-    $dc->DrawLine(25,150,275,150);
-    for (my $i=0; $i<scalar @$satlist; $i++)
+    $dc->DrawRectangle(10,10,600,600);
+    $dc->DrawCircle(310,310,250);
+    $dc->DrawLine(310,10,310,610);
+    $dc->DrawLine(10,310,610,310);
+    $dc->DrawText("N",315,15);
+    my $satcount=scalar @$satlist;
+    my $curcount=0;
+    for (my $i=0; $i<$satcount; $i++)
     {
 	# C++-Code from plasma-gps
 	#int x = (sin(m_satAzim[i] * M_PI / 180) * (90 - m_satElev[i]));
 	#int y = - (cos(m_satAzim[i] * M_PI / 180) * (90 - m_satElev[i]));
-	my $x=125+sin($$satlist[$i]->{"az"}*pi/180)*(90-$$satlist[$i]->{"el"});
-	my $y=125-cos($$satlist[$i]->{"az"}*pi/180)*(90-$$satlist[$i]->{"el"});
+#	my $x=125+sin($$satlist[$i]->{"az"}*pi/180)*(90-$$satlist[$i]->{"el"});
+#	my $y=125-cos($$satlist[$i]->{"az"}*pi/180)*(90-$$satlist[$i]->{"el"});
+	my $y=310+250*sin($$satlist[$i]->{"el"}*pi/180)*cos($$satlist[$i]->{"az"}*pi/180);
+	my $x=310+250*sin($$satlist[$i]->{"el"}*pi/180)*sin($$satlist[$i]->{"az"}*pi/180);
 #	print "X $x Y $y Used ".$$satlist[$i]->{"used"}."\n";
 	if (defined $$satlist[$i]->{"used"})
 	{
+	    $curcount++;
 	    $dc->SetPen(Wx::wxGREEN_PEN);
 	}
 	else
 	{
 	    $dc->SetPen(Wx::wxRED_PEN);
 	}
-	$dc->DrawCircle($x,$y,3);
+	$dc->DrawCircle($x,$y,5);
     }
-
+    $dc->DrawText("$curcount of $satcount satellites used",15,15);
 }
 
 }
@@ -233,4 +244,4 @@ $t->Start(100);
 
 # start processing events
 $app->MainLoop();
- 
+$t->Exit();
