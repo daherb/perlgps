@@ -58,6 +58,7 @@ sub Notify
 		push $satlist, {
 		    "az" => $$satarray[$i]->{"az"}, 
 		    "el" => $$satarray[$i]->{"el"}, 
+		    "ss" => $$satarray[$i]->{"ss"}, 
 		    "used" => $$satarray[$i]->{"used"}
 		};
 
@@ -115,7 +116,7 @@ use vars qw(@ISA);
 
 use Wx::Event qw(EVT_PAINT);
 # this imports some constants
-use Wx qw(wxDECORATIVE wxNORMAL wxBOLD wxMODERN wxFONTENCODING_SYSTEM);
+use Wx qw(wxDECORATIVE wxNORMAL wxBOLD wxMODERN wxFONTENCODING_SYSTEM wxSOLID);
 use Wx qw(wxDefaultPosition);
 use Wx qw(wxWHITE);
 use Date::Parse;
@@ -130,11 +131,17 @@ my $gps;
 my $alt;
 my $time;
 my $satlist=[];
+my $oldlat=0;
+my $oldlong=0;
+my $longpos=0;
+my $latpos=0;
 
 sub SetLong
 {
     my $this=shift;
     my $val=shift;
+    $oldlong=$longpos;
+    $longpos=$val;
     $long->SetLabel($val."° E") if defined $val;
 }
 
@@ -142,6 +149,8 @@ sub SetLat
 {
     my $this=shift;
     my $val=shift;
+    $oldlat=$latpos;
+    $latpos=$val;
     $lat->SetLabel($val."° N") if defined $val;
 }
 
@@ -187,12 +196,12 @@ sub new {
 			      wxFONTENCODING_SYSTEM);
     my( $this ) = shift->SUPER::new( undef, -1, 'PerlGPS', [-1, -1], [620, 590] );
     my $llong = Wx::StaticText->new($this, -1, "Longitude", [10,560]);
-    my $llat = Wx::StaticText->new($this, -1, "Latitude", [155,560]);
+    my $llat = Wx::StaticText->new($this, -1, "Latitude", [165,560]);
     my $lalt = Wx::StaticText->new($this, -1, "Altitude", [330,560]);
     my $ltime = Wx::StaticText->new($this, -1, "Time", [440,560]);
 #    my $lsats = Wx::StaticText->new($this, -1, "Satelites", [10,620]);
     $long = Wx::StaticText->new($this, -1, "0", [60,560]);
-    $lat = Wx::StaticText->new($this, -1, "0", [205,560]);
+    $lat = Wx::StaticText->new($this, -1, "0", [210,560]);
 #    $sats = Wx::StaticText->new($this, -1, "0", [60,620]);
     $alt=Wx::StaticText->new($this, -1, "0", [380,560]);
     $time=Wx::StaticText->new($this, -1, "0", [480,560]);
@@ -237,14 +246,21 @@ sub OnPaint {
 	{
 	    $curcount++;
 	    $dc->SetPen(Wx::wxGREEN_PEN);
+ 	    $dc->SetBrush(Wx::wxGREEN_BRUSH);
 	}
 	else
 	{
 	    $dc->SetPen(Wx::wxRED_PEN);
+ 	    $dc->SetBrush(Wx::wxRED_BRUSH);
 	}
-	$dc->DrawCircle($x,$y,3);
+	$dc->DrawCircle($x,$y,$$satlist[$i]->{"ss"}/10*5);
     }
     $dc->DrawText("$curcount of $satcount satellites used",45,15);
+    my $dy = $latpos - $oldlat;
+    my $dx = cos(pi/180*$oldlat)*($longpos - $oldlong);
+    my $angle = atan2($dy, $dx);
+    pritn $angle;
+    $dc->DrawText("Current heading $angle°",350,15);
 }
 
 }
