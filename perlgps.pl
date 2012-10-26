@@ -8,6 +8,7 @@ use Wx;
 use IO::Socket;
 use utf8;
 
+
 package MyTimer;
 {
 use vars qw(@ISA);
@@ -114,7 +115,7 @@ use vars qw(@ISA);
 
 use Wx::Event qw(EVT_PAINT);
 # this imports some constants
-use Wx qw(wxDECORATIVE wxNORMAL wxBOLD);
+use Wx qw(wxDECORATIVE wxNORMAL wxBOLD wxMODERN wxFONTENCODING_SYSTEM);
 use Wx qw(wxDefaultPosition);
 use Wx qw(wxWHITE);
 use Date::Parse;
@@ -177,6 +178,13 @@ sub SetSats
 
 sub new {
     # new frame with no parent, id -1
+    my $font = Wx::Font->new(7,                 # font size
+			      wxMODERN,       # font family
+			      wxNORMAL,           # style
+			      wxNORMAL,           # weight
+			      0,                  
+			      'Verdana',    # face name
+			      wxFONTENCODING_SYSTEM);
     my( $this ) = shift->SUPER::new( undef, -1, 'PerlGPS', [-1, -1], [620, 590] );
     my $llong = Wx::StaticText->new($this, -1, "Longitude", [10,560]);
     my $llat = Wx::StaticText->new($this, -1, "Latitude", [155,560]);
@@ -188,7 +196,14 @@ sub new {
 #    $sats = Wx::StaticText->new($this, -1, "0", [60,620]);
     $alt=Wx::StaticText->new($this, -1, "0", [380,560]);
     $time=Wx::StaticText->new($this, -1, "0", [480,560]);
-#    $this->SetIcon( Wx::GetWxPerlIcon() );
+    $llong->SetFont($font);
+    $llat->SetFont($font);
+    $lalt->SetFont($font);
+    $ltime->SetFont($font);
+    $long->SetFont($font);
+    $lat->SetFont($font);
+    $alt->SetFont($font);
+    $time->SetFont($font);
     # declare that all paint events will be handled with the OnPaint method
     EVT_PAINT( $this, \&OnPaint );
     # Test data
@@ -207,7 +222,7 @@ sub OnPaint {
     $dc->DrawCircle(310,280,250);
     $dc->DrawLine(310,10,310,550);
     $dc->DrawLine(40,280,580,280);
-    $dc->DrawText("N",325,15);
+    $dc->DrawText("N",320,15);
     my $satcount=scalar @$satlist;
     my $curcount=0;
     for (my $i=0; $i<$satcount; $i++)
@@ -227,7 +242,7 @@ sub OnPaint {
 	{
 	    $dc->SetPen(Wx::wxRED_PEN);
 	}
-	$dc->DrawCircle($x,$y,5);
+	$dc->DrawCircle($x,$y,3);
     }
     $dc->DrawText("$curcount of $satcount satellites used",45,15);
 }
