@@ -258,8 +258,9 @@ sub OnPaint {
     $dc->DrawText("$curcount of $satcount satellites used",45,15);
     my $dy = $latpos - $oldlat;
     my $dx = cos(pi/180*$oldlat)*($longpos - $oldlong);
-    my $angle = atan2($dy, $dx);
-    pritn $angle;
+    my $angle = atan2($dy, $dx)*180/pi;
+    $angle=$angle+360 if ($angle<0);
+    print "$angle\n";
     $dc->DrawText("Current heading $angle°",350,15);
 }
 
