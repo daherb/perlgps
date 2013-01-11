@@ -460,7 +460,7 @@ sub OnPaint {
 	push @p2, Wx::Point->new($cx+round(sin($h2)*($radius+15))+round(sin($h2)*-$scale/2+cos($h2)*-$scale/2),$cy-round(cos($h2)*($radius+15))-round(cos($h2)*-$scale/2+sin($h2)*$scale/2));
 	# Top again
 	push @p2, Wx::Point->new($cx+round(sin($h2)*($radius+15))+round(sin($h2)*$scale/2),$cy-round(cos($h2)*($radius+15))-round(cos($h2)*$scale/2));
-	$dc->DrawText("$dist m",10+$cx+round(sin($h2)*($radius+15))+round(sin($h2)*$scale/2),$cy-round(cos($h2)*($radius+15))-round(cos($h2)*$scale/2));
+	$dc->DrawText(round($dist)." m",10+$cx+round(sin($h2)*($radius+15))+round(sin($h2)*$scale/2),$cy-round(cos($h2)*($radius+15))-round(cos($h2)*$scale/2));
 	# Draw One or Both Arrows
 	$dc->SetPen(Wx::wxCYAN_PEN);
 	$dc->SetBrush(Wx::wxCYAN_BRUSH);
