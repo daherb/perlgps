@@ -428,14 +428,15 @@ sub OnPaint {
     # Compute Polygon for Heading Arrow
     my $heading = DegToRad($angle);
     my @points;
-    push @points, Wx::Point->new($cx+round(sin($heading)*$scale/2),$cy-round(cos($heading)*$scale/2));
-    push @points, Wx::Point->new($cx+round(sin($heading)*-$scale/2+cos($heading)*$scale/2),$cy-round(cos($heading)*-$scale/2+sin($heading)*-$scale/2));
-    push @points, Wx::Point->new($cx+round(sin($heading)*(-$scale/2+$in)),$cy-round(cos($heading)*(-$scale/2+$in)));
-    push @points, Wx::Point->new($cx+round(sin($heading)*-$scale/2+cos($heading)*-$scale/2),$cy-round(cos($heading)*-$scale/2+sin($heading)*$scale/2));
-    push @points, Wx::Point->new($cx+round(sin($heading)*$scale/2),$cy-round(cos($heading)*$scale/2));
+    push @points, Wx::Point->new($cx+round(sin($heading)*($radius+10))+round(sin($heading)*$scale/2),$cy-round(cos($heading)*($radius+10))-round(cos($heading)*$scale/2));
+    push @points, Wx::Point->new($cx+round(sin($heading)*($radius+10))+round(sin($heading)*-$scale/2+cos($heading)*$scale/2),$cy-round(cos($heading)*($radius+10))-round(cos($heading)*-$scale/2+sin($heading)*-$scale/2));
+    push @points, Wx::Point->new($cx+round(sin($heading)*($radius+10))+round(sin($heading)*(-$scale/2+$in)),$cy-round(cos($heading)*($radius+10))-round(cos($heading)*(-$scale/2+$in)));
+    push @points, Wx::Point->new($cx+round(sin($heading)*($radius+10))+round(sin($heading)*-$scale/2+cos($heading)*-$scale/2),$cy-round(cos($heading)*($radius+10))-round(cos($heading)*-$scale/2+sin($heading)*$scale/2));
+    push @points, Wx::Point->new($cx+round(sin($heading)*($radius+10))+round(sin($heading)*$scale/2),$cy-round(cos($heading)*($radius+10))-round(cos($heading)*$scale/2));
     # Compute Polygon for Direction Arrow (Only if $hasmem is true)
     if ($hasmem)
     {
+	$scale=25;
 	# Compute distance in meters
 	sub NESW { DegToRad($_[0]), DegToRad(90 - $_[1]) }
 	my @Pos = NESW($longpos, $latpos);
@@ -449,6 +450,7 @@ sub OnPaint {
 	push @p2, Wx::Point->new($cx+round(sin($h2)*($radius+10))+round(sin($h2)*(-$scale/2+$in)),$cy-round(cos($h2)*($radius+10))-round(cos($h2)*(-$scale/2+$in)));
 	push @p2, Wx::Point->new($cx+round(sin($h2)*($radius+10))+round(sin($h2)*-$scale/2+cos($h2)*-$scale/2),$cy-round(cos($h2)*($radius+10))-round(cos($h2)*-$scale/2+sin($h2)*$scale/2));
 	push @p2, Wx::Point->new($cx+round(sin($h2)*($radius+10))+round(sin($h2)*$scale/2),$cy-round(cos($h2)*($radius+10))-round(cos($h2)*$scale/2));
+	$dc->DrawText("$dist m",5+$cx+round(sin($h2)*($radius+10))+round(sin($h2)*-$scale/2+cos($h2)*$scale/2),$cy-round(cos($h2)*($radius+10))-round(cos($h2)*-$scale/2+sin($h2)*-$scale/2));
 	# Draw One or Both Arrows
 	$dc->SetPen(Wx::wxCYAN_PEN);
 	$dc->SetBrush(Wx::wxCYAN_BRUSH);
