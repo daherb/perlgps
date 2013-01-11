@@ -359,7 +359,7 @@ sub SetAngle
 {
     my $this=shift;
     my $val=shift;
-    $angle=shift if defined $val;
+    $angle=$val if defined $val;
 }
 
 sub new {
